@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  php:
+    #image: thecodingmachine/php:8.2-v4-apache
+    build:
+      context: ../
+      dockerfile: ./.docker/php/Dockerfile
+    ports:
+      - "80:80"
+      - "433:433"
+    env_file:
+      - .env
+
+  database:
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED
+    ports:
+      - "${MYSQL_PORT}:1433"
+    volumes:
+      - "database_data:/var/lib/mysql"
+    env_file:
+      - .env
+
+  adminer:
+    image: dockette/adminer:latest
+    ports:
+      - "${ADMINER_PORT}:80"
+
+volumes:
+  database_data:
+    driver: local
